@@ -45,8 +45,8 @@ Converts city names to weather data:
 ```mermaid
 graph TB
     %% Client Layer
-    Client["`**Client Application**
-    (Mobile, Web, etc.)`"]
+    Client["`**HTTP Request**
+    GET /api/weather?city=name`"]
     
     %% API Gateway Layer
     API["`**Weather API Service**
