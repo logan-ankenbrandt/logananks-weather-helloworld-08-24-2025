@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="b9d6b356-616a-4947-b9a5-7af783ccfc7d" basePath="/api" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="Geocode_Request_Config" doc:name="HTTP Request configuration" doc:id="871ff955-b4a6-47c2-b2b6-20d1102569fd" >
+		<http:request-connection protocol="HTTPS" host="geocoding-api.open-meteo.com" port="443" />
+	</http:request-config>
+	<http:request-config name="OpenMeteo_Request_Config" doc:name="HTTP Request configuration" doc:id="4c19f16e-e1da-41be-88db-96890c634b63" >
+		<http:request-connection host="api.open-meteo.com" port="443" protocol="HTTPS"/>
+	</http:request-config>
+	<flow name="logananks-weather-hello-08-24-2025Flow" doc:id="31219ed5-4f53-45a7-b478-78ca01d98fb8" >
+		<http:listener doc:name="Listener" doc:id="50208224-2956-4d3b-a1d5-0afbbb5a1df8" config-ref="HTTP_Listener_config" path="/weather"/>
+		<ee:transform doc:name="Transform Message" doc:id="f9e00c64-10ff-4624-a553-d646507c63a9">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var q = attributes.queryParams
+---
+{
+  // default to Dallas if ?city= isn’t provided
+  city: (q.city default "Dallas") as String
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value="#[payload.city]" doc:name="Set Variable" doc:id="79edbe33-3368-45b3-a0b9-322fa126e93f" variableName="city"/>
+		<http:request method="GET" doc:name="Request" doc:id="9b94106a-6174-4c44-860e-1a22a147f857" config-ref="Geocode_Request_Config" path="/v1/search">
+			<http:query-params ><![CDATA[#[{name: vars.city, count: 1}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="99ace500-aaa2-43a7-b333-810949bbc150" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+  lat:  (payload.results default [])[0].latitude  as Number,
+  lon:  (payload.results default [])[0].longitude as Number
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value="#[payload.lat]" doc:name="Set Variable" doc:id="73f925f7-51e4-4d30-98a3-1d7405690bd3" variableName="lat"/>
+		<set-variable value="#[payload.lon]" doc:name="Set Variable" doc:id="cd48a723-b924-4f4b-9862-1b93e78ccd08" variableName="lon"/>
+		<http:request method="GET" doc:name="Request" doc:id="b6ae4aa1-c954-40d1-9239-3bc81b36fe6a" config-ref="OpenMeteo_Request_Config" path="/v1/forecast">
+			<http:query-params ><![CDATA[#[{latitude: vars.lat, longitude: vars.lon, current_weather: true}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="58ee5d8e-2ef6-4f35-8b04-7831bff5af33" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var cw = payload.current_weather
+---
+{
+  city: vars.city,
+  latitude: vars.lat,
+  longitude: vars.lon,
+  temperature_c: cw.temperature,
+  windspeed_kmh: cw.windspeed,
+  winddirection_deg: cw.winddirection,
+  observed_at_iso: cw.time
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
