@@ -17,19 +17,19 @@ mvn clean package
 # The deployable JAR is: target/logananks-weather-hello-08-24-2025-1.0.0-SNAPSHOT-mule-application.jar
 
 # Test the API
-curl "http://localhost:8081/api/weather?city=Seattle"
+curl "http://localhost:8081/api/weather?city=Mckinney"
 ```
 
 **Expected Response:**
 ```json
 {
-  "city": "Seattle",
-  "latitude": 47.6038321,
-  "longitude": -122.3300624,
-  "temperature_c": 12.5,
-  "windspeed_kmh": 15.2,
-  "winddirection_deg": 245,
-  "observed_at_iso": "2025-01-08T15:30"
+  "city": "McKinney",
+  "latitude": 33.19762,
+  "longitude": -96.61527,
+  "temperature_c": 26.2,
+  "windspeed_kmh": 10.3,
+  "winddirection_deg": 29,
+  "observed_at_iso": "2025-08-24T13:45"
 }
 ```
 
@@ -53,7 +53,7 @@ This service transforms a simple city name into comprehensive current weather da
 
 ```mermaid
 graph TD
-    A[Client Application] -->|GET /api/weather?city=Seattle| B[Weather API Service]
+    A[Client Application] -->|GET /api/weather?city=Mckinney| B[Weather API Service]
     B -->|1. Geocode Request| C[Open-Meteo Geocoding API]
     C -->|Lat/Lon Coordinates| B
     B -->|2. Weather Request| D[Open-Meteo Weather API]
