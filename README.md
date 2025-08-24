@@ -52,17 +52,50 @@ This service transforms a simple city name into comprehensive current weather da
 ## Architecture Overview
 
 ```mermaid
-graph TD
-    A[Client Application] -->|GET /api/weather?city=Mckinney| B[Weather API Service]
-    B -->|1. Geocode Request| C[Open-Meteo Geocoding API]
-    C -->|Lat/Lon Coordinates| B
-    B -->|2. Weather Request| D[Open-Meteo Weather API]
-    D -->|Current Weather Data| B
-    B -->|Structured JSON Response| A
+graph TB
+    %% Client Layer
+    Client["`**Client Application**
+    (Mobile, Web, etc.)`"]
     
-    style B fill:#e1f5fe
-    style C fill:#f3e5f5
-    style D fill:#f3e5f5
+    %% API Gateway Layer
+    API["`**Weather API Service**
+    MuleSoft Integration
+    Port: 8081`"]
+    
+    %% External Services Layer
+    subgraph External["External APIs"]
+        Geo["`**Open-Meteo Geocoding**
+        City → Coordinates`"]
+        Weather["`**Open-Meteo Weather**
+        Current Conditions`"]
+    end
+    
+    %% Data Flow
+    Client -->|"`**1. HTTP Request**
+    GET /api/weather?city=McKinney`"| API
+    
+    API -->|"`**2. Geocode Lookup**
+    City name → Lat/Lon`"| Geo
+    Geo -->|"`**3. Coordinates**
+    33.1976, -96.6153`"| API
+    
+    API -->|"`**4. Weather Request**
+    Using coordinates`"| Weather
+    Weather -->|"`**5. Weather Data**
+    Temperature, wind, etc.`"| API
+    
+    API -->|"`**6. JSON Response**
+    Structured weather data`"| Client
+    
+    %% Styling
+    classDef client fill:#e3f2fd,stroke:#1976d2,stroke-width:2px,color:#000
+    classDef service fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#000
+    classDef external fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#000
+    classDef api fill:#e8f5e8,stroke:#388e3c,stroke-width:3px,color:#000
+    
+    class Client client
+    class API api
+    class Geo,Weather external
 ```
 
 **Key Components:**
