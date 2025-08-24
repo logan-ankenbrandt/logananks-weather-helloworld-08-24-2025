@@ -6,6 +6,11 @@
 
 Weather API service that returns current weather data for cities. Uses MuleSoft to integrate Open-Meteo APIs.
 
+
+![MuleSoft Flow](mulesoft-flow.png)
+
+![Sample API Request](sample-request.png)
+
 ## Setup
 
 ```bash
@@ -18,8 +23,6 @@ mvn clean package
 # Test the API
 curl "http://localhost:8081/api/weather?city=Mckinney"
 ```
-
-![Sample API Request](sample-request.png)
 
 Response:
 ```json
@@ -98,8 +101,6 @@ Components:
 - Weather data via Open-Meteo API  
 - DataWeave transformations
 - Error handling with Dallas fallback
-
-![MuleSoft Flow](mulesoft-flow.png)
 
 ## API
 
