@@ -2,9 +2,7 @@
 
 Weather API service that returns current weather data for cities. Uses MuleSoft to integrate Open-Meteo APIs.
 
-
 ![MuleSoft Flow](mulesoft-flow.png)
-
 ![Sample API Request](sample-request.png)
 
 ## Setup
