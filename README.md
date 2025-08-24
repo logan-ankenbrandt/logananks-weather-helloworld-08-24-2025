@@ -1,9 +1,5 @@
 # Weather API Integration Service
 
-[![MuleSoft](https://img.shields.io/badge/MuleSoft-4.9.0-blue.svg)](https://www.mulesoft.com/)
-[![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://openjdk.java.net/)
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
-
 Weather API service that returns current weather data for cities. Uses MuleSoft to integrate Open-Meteo APIs.
 
 
