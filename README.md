@@ -14,11 +14,12 @@ cd logananks-weather-hello-08-24-2025
 
 # Deploy to local Mule runtime (if you have MuleSoft installed)
 mvn clean package
-# The deployable JAR is: target/logananks-weather-hello-08-24-2025-1.0.0-SNAPSHOT-mule-application.jar
 
 # Test the API
 curl "http://localhost:8081/api/weather?city=Mckinney"
 ```
+
+![Sample API Request](sample-request.png)
 
 Response:
 ```json
@@ -97,6 +98,8 @@ Components:
 - Weather data via Open-Meteo API  
 - DataWeave transformations
 - Error handling with Dallas fallback
+
+![MuleSoft Flow](mulesoft-flow.png)
 
 ## API
 
